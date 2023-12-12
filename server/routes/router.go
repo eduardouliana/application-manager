@@ -27,6 +27,14 @@ func ConfigRoutes(router *gin.Engine) *gin.Engine {
 		applicationCommands.PUT("/:id", controllers.UpdateCommand)
 		applicationCommands.DELETE("/:id", controllers.DeleteCommand)
 	}
+
+	pendingCommands := router.Group("/pending-commands")
+	{
+		pendingCommands.GET("/", controllers.GetAllPendingCommands)
+		pendingCommands.GET("/:id", controllers.GetPendingCommand)
+		pendingCommands.POST("/", controllers.AddPendingCommand)
+		pendingCommands.PUT("/:id", controllers.UpdatePendingCommand)
+		pendingCommands.DELETE("/:id", controllers.DeletePendingCommand)
 	}
 
 	return router

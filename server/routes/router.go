@@ -19,6 +19,14 @@ func ConfigRoutes(router *gin.Engine) *gin.Engine {
 		applications.DELETE("/:id", controllers.DeleteApplication)
 	}
 
+	applicationCommands := router.Group("/application-commands")
+	{
+		applicationCommands.GET("/", controllers.GetAllCommands)
+		applicationCommands.GET("/:id", controllers.GetCommand)
+		applicationCommands.POST("/", controllers.AddCommand)
+		applicationCommands.PUT("/:id", controllers.UpdateCommand)
+		applicationCommands.DELETE("/:id", controllers.DeleteCommand)
+	}
 	}
 
 	return router

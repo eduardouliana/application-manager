@@ -7,7 +7,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterApplication(c *gin.Context) {
+func GetAllApplications(c *gin.Context) {
+	var applications []models.Applications
+
+	db := database.GetDB()
+	err := db.Find(&applications).Error
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Failed to get applications! Error: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, applications)
+}
+
+func GetApplication(c *gin.Context) {
+	var application models.Applications
+
+	db := database.GetDB()
+	err := db.Where("id = ?", c.Param("id")).First(&application).Error
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Failed to get application! Error: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, application)
+}
+
+func AddApplication(c *gin.Context) {
 	var application models.Applications
 
 	err := c.ShouldBindJSON(&application)
@@ -32,17 +62,44 @@ func RegisterApplication(c *gin.Context) {
 	})
 }
 
-func GetApplications(c *gin.Context) {
-	var applications []models.Applications
+func UpdateApplication(c *gin.Context) {
+	var application models.Applications
 
-	db := database.GetDB()
-	err := db.Find(&applications).Error
+	err := c.ShouldBindJSON(&application)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": "Failed to get applications! Error: " + err.Error(),
+			"error": "Failed to bind JSON! Error: " + err.Error(),
 		})
 		return
 	}
 
-	c.JSON(200, applications)
+	db := database.GetDB()
+	err = db.Save(&application).Error
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Failed to update application! Error: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Successfully updated application!",
+	})
+}
+
+func DeleteApplication(c *gin.Context) {
+	var application models.Applications
+
+	db := database.GetDB()
+	err := db.Where("id = ?", c.Param("id")).Delete(&application).Error
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Failed to delete application! Error: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Successfully deleted application!",
+	})
 }
